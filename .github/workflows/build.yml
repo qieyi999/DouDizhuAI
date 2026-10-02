@@ -3,45 +3,28 @@ name: Build APK
 on:
   push:
     branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout代码
-      uses: actions/checkout@v3
-    
-    - name: 设置JDK 11
-      uses: actions/setup-java@v3
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
       with:
-        java-version: '11'
+        java-version: '17'
         distribution: 'temurin'
-        cache: gradle
-    
-    - name: 授予gradlew执行权限
-      run: chmod +x gradlew
-    
-    - name: 构建Debug APK
-      run: ./gradlew assembleDebug
-    
-    - name: 上传APK
-      uses: actions/upload-artifact@v3
+
+    - name: Setup and run Gradle
+      uses: gradle/actions/setup-gradle@v3
+
+    - name: Build with Gradle
+      run: gradle :app:assembleDebug --no-daemon
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
       with:
-        name: app-debug
+        name: doudizhu-ai-apk
         path: app/build/outputs/apk/debug/app-debug.apk
-    
-    - name: 创建Release（可选）
-      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: v1.0.${{ github.run_number }}
-        name: 斗地主AI v1.0.${{ github.run_number }}
-        files: app/build/outputs/apk/debug/app-debug.apk
-        draft: false
-        prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
