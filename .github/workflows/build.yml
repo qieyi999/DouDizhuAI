@@ -14,17 +14,18 @@ jobs:
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
-        java-version: '17'
-        distribution: 'temurin'
+        java-version: 17
+        distribution: temurin
 
-    - name: Setup and run Gradle
-      uses: gradle/actions/setup-gradle@v3
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
 
     - name: Build with Gradle
-      run: gradle :app:assembleDebug --no-daemon
+      run: gradle -p app assembleDebug --no-daemon
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: doudizhu-ai-apk
         path: app/build/outputs/apk/debug/app-debug.apk
+
