@@ -5,41 +5,19 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
-options:
-  runs-on: ubuntu-latest
-
-env:
-  Gradle_VERSION: "8.1.4"
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-java@v4
         with:
           java-version: 17
           distribution: temurin
-
-      - name: Setup Gradle Wrapper
-        run: |
-          mkdir -p /.gradle/wrapper-dist
-          cat < /.gradle/wrapper-dist/gradle-wrapper.properties << EOF
-            distributionUrl=\\/\\/(services.gradle.org/distributions)
-            distributionBase=projects//distributions
-            zipStoreBase=projects//zips/
-            wdFolder=projects//wd//gradle
-            gradle-version=projects//gradle-8.1.4-all.zip
-            distributionName=gradle
-
       - uses: gradle/actions/setup-gradle@v4
-
-      - name: Build APK AssembleDebug
-        run: gradle assembleDebug --no-daemon --daemon
-
+      - run: gradle assembleDebug --no-daemon
       - uses: actions/upload-artifact@v4
-        if:  success()
+        if: success()
         with:
           name: doudizhu-ai-apk
           path: app/build/outputs/apk/debug/app-debug.apk
